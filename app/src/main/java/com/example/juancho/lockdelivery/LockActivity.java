@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.View.OnClickListener;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.StringRequest;
@@ -21,24 +22,67 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.android.volley.Response;
 
-public class LockActivity extends AppCompatActivity {
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
+
+public class LockActivity extends AppCompatActivity implements OnClickListener {
+
+    private Button mBtLocker;
+    private Button mBtDistance;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lock);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        // Logo Lock
-        ImageView logo = (ImageView)findViewById(R.id.logo);
-        logo.setImageResource(R.drawable.logo);
+        mBtLocker = (Button) findViewById(R.id.btn_locker);
+        mBtDistance = (Button) findViewById(R.id.btn_distance);
 
-        // Button
-        Button btnLock = (Button) findViewById(R.id.btn_Lock);
+        mBtLocker.setOnClickListener(this);
+        mBtDistance.setOnClickListener(this);
+    }
 
+    @Override
+    public void onClick(View view){
+        switch(view.getId()){
+            case R.id.btn_locker:
+                page_Request();
+                toggleBtn();
+                break;
+            case R.id.btn_distance:
+                distanceBtn();
+                break;
+        }
+    }
 
+    //Calculate the distance
+    private void distanceBtn(){
+        final SweetAlertDialog boxEmpty =  new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+                .setTitleText("The Locker is Occupied!")
+                .setContentText("There is a package in the locker!");
+        boxEmpty.show();
 
+    }
+    // Toggle Lock button status
+    private void toggleBtn( ){
+        final SweetAlertDialog unlockSuccess =  new SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
+                .setTitleText("Unlocked!")
+                .setContentText("Locker Box Unlocked!");
+
+        final SweetAlertDialog lockSuccess =  new SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
+                .setTitleText("Locked!")
+                .setContentText("Locker Box Locked!");
+
+        if(mBtLocker.getText().toString() == "Unlock"){
+            lockSuccess.show();
+            mBtLocker.setText("Lock");
+        }
+        else{
+            unlockSuccess.show();
+            mBtLocker.setText("Unlock");
+        }
     }
 
     // Toast a message with a button
@@ -46,8 +90,10 @@ public class LockActivity extends AppCompatActivity {
         Toast.makeText(getBaseContext(),"Hola", Toast.LENGTH_SHORT).show();
     }
 
+
+
     // Request to a page
-    public void page_Request(View v){
+    public void page_Request(){
         // Request with Volley
         final TextView mTextView = (TextView) findViewById(R.id.text_Request);
 
@@ -61,7 +107,7 @@ public class LockActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         // Display the first 500 characters of the response string.
-                        mTextView.setText("Response is: "+ response.substring(0,500));
+                        //mTextView.setText("Response is: "+ response.substring(0,500));
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -74,25 +120,7 @@ public class LockActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_lock, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
-        return super.onOptionsItemSelected(item);
-    }
 }
